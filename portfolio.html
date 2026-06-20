@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soban Hussain — AI/ML Engineer &amp; Research Assistant</title>
+<meta name="description" content="Soban Hussain — AI/ML Engineer building Vision-Language Models, RAG systems, and applied deep learning pipelines. iCOMET 2026 accepted paper presenter.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2315171c'/%3E%3Cpath d='M5 12V6h6M27 12V6h-6M5 20v6h6M27 20v6h-6' stroke='%23e8540f' stroke-width='2.4' fill='none'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,500;1,8..60,600&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   TOKENS — "Detection Dossier": a research paper crossed
+   with a computer-vision annotation tool. Paper, ink, and a
+   single calibrated signal color used only where it matters.
+   ========================================================== */
+:root{
+  --ink:        #15171C;
+  --ink-soft:   #4B5058;
+  --ink-faint:  #8B9098;
+
+  --paper:      #F7F7F3;
+  --paper-alt:  #F0EFE9;
+  --card:       #FFFFFF;
+  --line:       #E2E0D6;
+  --line-strong:#CBC7B9;
+
+  --signal:     #E8540F;
+  --signal-soft:#FBE0D2;
+  --accept:     #1F7A52;
+  --accept-soft:#DCEDE3;
+
+  --code-bg:    #15171C;
+  --code-line:  #2B2E35;
+  --code-text:  #F0EFE9;
+  --code-dim:   #8B9098;
+
+  --display: 'Source Serif 4', Georgia, serif;
+  --mono:    'IBM Plex Mono', ui-monospace, monospace;
+  --body:    'IBM Plex Sans', system-ui, sans-serif;
+
+  --maxw:    1240px;
+  --side-w:  236px;
+  --r-card:  9px;
+  --r-sm:    6px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:
+    radial-gradient(circle, var(--line) 1px, transparent 1.2px) 0 0/26px 26px,
+    var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  line-height:1.65;
+  font-size:16px;
+  -webkit-font-smoothing:antialiased;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}
+}
+
+a{color:inherit;text-decoration:none;}
+::selection{background:var(--signal-soft);color:#5A2207;}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:3px;}
+img,svg{display:block;max-width:100%;}
+
+h1,h2,h3{font-family:var(--display);font-weight:500;letter-spacing:-0.005em;color:var(--ink);}
+em{font-style:italic;}
+
+/* mono labels / eyebrows */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11.5px;font-weight:500;
+  letter-spacing:.10em;text-transform:uppercase;
+  color:var(--ink-faint);
+  display:flex;align-items:center;gap:9px;
+}
+.eyebrow::before{
+  content:'';width:7px;height:7px;
+  border:1.5px solid var(--signal);
+  transform:rotate(45deg);flex-shrink:0;
+}
+.eyebrow b{color:var(--ink-soft);font-weight:500;}
+
+.section{
+  max-width:var(--maxw);margin:0 auto;
+  padding:88px 48px;
+  border-bottom:1px solid var(--line);
+}
+@media (max-width:720px){.section{padding:60px 22px;}}
+
+.section-head{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:24px;margin-bottom:48px;flex-wrap:wrap;
+}
+.section-head h2{font-size:clamp(28px,3.4vw,40px);margin-top:10px;}
+.section-head h2 em{color:var(--signal);}
+.section-index{
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);
+  letter-spacing:.04em;text-align:right;
+}
+
+/* corner-bracket utility — the recurring signature motif,
+   drawn from object-detection / annotation-tool UI */
+.bracket{position:relative;}
+.bracket::before,.bracket::after{
+  content:'';position:absolute;width:13px;height:13px;
+  border-color:var(--signal);border-style:solid;border-width:0;
+  opacity:0;transition:opacity .25s ease, transform .25s ease;
+  pointer-events:none;
+}
+.bracket::before{top:-6px;left:-6px;border-top-width:2px;border-left-width:2px;transform:translate(4px,4px);}
+.bracket::after{bottom:-6px;right:-6px;border-bottom-width:2px;border-right-width:2px;transform:translate(-4px,-4px);}
+.bracket:hover::before,.bracket:hover::after,.bracket:focus-within::before,.bracket:focus-within::after{
+  opacity:1;transform:translate(0,0);
+}
+
+/* ==========================================================
+   NAV
+   ========================================================== */
+.railnav{
+  position:fixed;top:22px;left:22px;bottom:22px;
+  width:var(--side-w);
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--card);
+  box-shadow:0 14px 36px rgba(21,23,28,0.07);
+  padding:26px 22px;
+  display:flex;flex-direction:column;
+  z-index:50;
+}
+.railnav .brand{
+  font-family:var(--display);font-size:17px;font-weight:600;color:var(--ink);
+  line-height:1.3;
+}
+.railnav .brand em{font-style:italic;color:var(--signal);}
+.railnav .brand-sub{
+  font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);
+  margin-top:5px;letter-spacing:.06em;text-transform:uppercase;
+}
+.railnav .status{
+  font-family:var(--mono);font-size:11px;color:var(--accept);
+  display:flex;gap:7px;align-items:center;
+  margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);
+}
+.railnav .status .dot{width:6px;height:6px;border-radius:50%;background:var(--accept);animation:pulse 2.6s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+.railnav nav{display:flex;flex-direction:column;gap:1px;margin-top:22px;}
+.railnav nav a{
+  font-family:var(--mono);font-size:13px;font-weight:500;color:var(--ink-soft);
+  padding:9px 10px;border-radius:5px;
+  display:flex;gap:10px;align-items:baseline;
+  border-left:2px solid transparent;
+  transition:color .18s,background .18s,border-color .18s;
+}
+.railnav nav a .idx{color:var(--ink-faint);font-size:11px;}
+.railnav nav a:hover{color:var(--ink);background:var(--paper-alt);}
+.railnav nav a.active{color:var(--signal);border-left-color:var(--signal);background:var(--signal-soft);}
+.railnav nav a.active .idx{color:var(--signal);}
+
+.railnav .rail-foot{
+  margin-top:auto;display:flex;flex-direction:column;gap:8px;
+  padding-top:18px;border-top:1px dashed var(--line);
+}
+.railnav .rail-foot a{
+  font-family:var(--mono);font-size:12px;font-weight:500;color:var(--ink-soft);
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 2px;transition:color .18s;
+}
+.railnav .rail-foot a:hover{color:var(--signal);}
+.railnav .rail-foot a::after{content:'↗';color:var(--ink-faint);}
+
+.mobile-toggle{
+  display:none;position:fixed;top:18px;right:18px;z-index:60;
+  background:var(--ink);color:var(--paper);
+  font-family:var(--mono);font-weight:500;font-size:11.5px;
+  padding:10px 14px;border-radius:7px;border:none;letter-spacing:.05em;
+}
+@media (max-width:920px){
+  .railnav{left:-300px;transition:left .28s ease;width:260px;}
+  .railnav.open{left:14px;}
+  .mobile-toggle{display:block;}
+  .main{margin-left:0 !important;}
+}
+.main{margin-left:calc(var(--side-w) + 64px);}
+@media (max-width:920px){.main{margin-left:0;}}
+
+/* ==========================================================
+   HERO
+   ========================================================== */
+.hero{
+  max-width:var(--maxw);margin:0 auto;
+  padding:64px 48px 88px;
+  display:grid;grid-template-columns:1.06fr 0.94fr;
+  gap:54px;align-items:start;
+  border-bottom:1px solid var(--line);
+}
+@media (max-width:920px){.hero{grid-template-columns:1fr;padding:88px 22px 56px;}}
+
+.hero-kicker{
+  font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);
+  display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:22px;
+}
+.hero-kicker .hk-name{color:var(--ink);font-weight:600;}
+.hero-kicker .sep{color:var(--line-strong);}
+.hero-kicker .hk-status{
+  display:inline-flex;align-items:center;gap:6px;color:var(--accept);
+  border:1px solid var(--accept-soft);background:var(--accept-soft);
+  padding:3px 9px;border-radius:20px;font-size:11px;
+}
+.hero-kicker .hk-status .d{width:5px;height:5px;border-radius:50%;background:var(--accept);}
+
+.hero h1{
+  font-size:clamp(34px,4.6vw,54px);line-height:1.1;margin-bottom:22px;font-weight:500;
+}
+.hero h1 em{font-style:italic;color:var(--signal);font-weight:500;}
+.hero p.lede{font-size:17px;color:var(--ink-soft);max-width:540px;margin-bottom:8px;}
+.hero p.lede strong{color:var(--ink);font-weight:600;}
+.hero .hero-facts{
+  font-family:var(--mono);font-size:12px;color:var(--ink-faint);
+  margin-bottom:30px;letter-spacing:.01em;
+}
+
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:38px;}
+.btn{
+  font-family:var(--mono);font-weight:500;font-size:13px;letter-spacing:.02em;
+  padding:13px 20px;border-radius:var(--r-sm);
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .18s, box-shadow .18s, background .18s, color .18s, border-color .18s;
+  border:1px solid transparent;
+}
+.btn-primary{background:var(--ink);color:var(--paper);}
+.btn-primary:hover{background:var(--signal);transform:translateY(-2px);box-shadow:0 10px 22px rgba(232,84,15,0.28);}
+.btn-ghost{border-color:var(--line-strong);color:var(--ink);background:var(--card);}
+.btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px);}
+
+.hero-stats{display:flex;gap:10px;flex-wrap:wrap;}
+.hstat{
+  border:1px solid var(--line);background:var(--card);border-radius:var(--r-sm);
+  padding:11px 15px;display:flex;flex-direction:column;gap:4px;min-width:118px;
+}
+.hstat .n{font-family:var(--display);font-size:21px;font-weight:600;color:var(--ink);}
+.hstat .l{font-family:var(--mono);font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.05em;}
+
+/* ---- signature panel: detection viewfinder ---- */
+.scan-panel{
+  background:var(--code-bg);border-radius:11px;overflow:hidden;
+  box-shadow:0 26px 54px rgba(21,23,28,0.20);
+  border:1px solid #20232a;
+}
+.scan-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:13px 16px;border-bottom:1px solid var(--code-line);
+  font-family:var(--mono);font-size:11px;color:var(--code-dim);
+}
+.scan-head .rec{display:flex;align-items:center;gap:6px;color:#E8540F;}
+.scan-head .rec .rd{width:6px;height:6px;border-radius:50%;background:#E8540F;animation:pulse 1.6s infinite;}
+
+.scan-view{
+  position:relative;height:248px;margin:14px;border-radius:6px;
+  border:1px dashed #353941;
+  background-image:linear-gradient(#1B1E24 1px,transparent 1px),linear-gradient(90deg,#1B1E24 1px,transparent 1px);
+  background-size:24px 24px;
+  overflow:hidden;
+}
+.scan-view::before,.scan-view::after,.scan-corners span{content:'';position:absolute;width:16px;height:16px;border-color:#454952;border-style:solid;border-width:0;}
+.scan-corners span:nth-child(1){top:8px;left:8px;border-top-width:2px;border-left-width:2px;}
+.scan-corners span:nth-child(2){top:8px;right:8px;border-top-width:2px;border-right-width:2px;}
+.scan-corners span:nth-child(3){bottom:8px;left:8px;border-bottom-width:2px;border-left-width:2px;}
+.scan-corners span:nth-child(4){bottom:8px;right:8px;border-bottom-width:2px;border-right-width:2px;}
+
+.scan-line{
+  position:absolute;left:0;right:0;height:38%;
+  background:linear-gradient(180deg, transparent, rgba(232,84,15,0.10) 50%, transparent);
+  border-bottom:1px solid rgba(232,84,15,0.45);
+  animation:scanMove 5s linear infinite;
+}
+@keyframes scanMove{0%{top:-38%;}100%{top:100%;}}
+@media (prefers-reduced-motion: reduce){.scan-line{display:none;}}
+
+.det-tag{
+  position:absolute;font-family:var(--mono);font-size:10.5px;
+  border:1px solid #4A4F58;background:rgba(21,23,28,0.85);
+  color:#F0EFE9;padding:5px 9px;border-radius:4px;white-space:nowrap;
+}
+.det-tag .conf{color:#9AA0AA;margin-left:6px;}
+.det-tag.is-accept{border-color:var(--accept);}
+.det-tag.is-accept .conf{color:#7BC9A2;}
+.det-tag.is-signal{border-color:var(--signal);}
+.det-tag.is-signal .conf{color:#F2A171;}
+.det-tag::before{content:'';position:absolute;top:-4px;left:8px;width:6px;height:6px;border-top:1px solid inherit;border-left:1px solid inherit;}
+
+.t1{top:22px;left:18px;}
+.t2{top:96px;right:20px;}
+.t3{bottom:54px;left:30px;}
+.t4{bottom:18px;right:16px;}
+@media (max-width:920px){
+  .scan-view{height:auto;padding:16px 10px;}
+  .det-tag{position:static;display:inline-flex;margin:4px;}
+  .scan-corners{display:none;}
+}
+
+.scan-readout{
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  border-top:1px solid var(--code-line);
+}
+.scan-readout div{padding:13px 10px;text-align:center;border-left:1px solid var(--code-line);}
+.scan-readout div:first-child{border-left:none;}
+.scan-readout .v{font-family:var(--mono);font-size:14px;font-weight:600;color:#F0EFE9;}
+.scan-readout .k{font-family:var(--mono);font-size:9.5px;color:var(--code-dim);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+
+/* ==========================================================
+   REVEAL
+   ========================================================== */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* ==========================================================
+   ABOUT
+   ========================================================== */
+.about-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;}
+@media (max-width:820px){.about-grid{grid-template-columns:1fr;}}
+.about-grid p{color:var(--ink-soft);margin-bottom:17px;font-size:15.5px;}
+.about-grid p strong{color:var(--ink);font-weight:600;}
+
+.spec-sheet{
+  border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);
+  margin-bottom:24px;overflow:hidden;
+}
+.spec-sheet .ss-head{
+  font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  padding:10px 16px;border-bottom:1px solid var(--line);letter-spacing:.06em;text-transform:uppercase;
+}
+.spec-row{display:grid;grid-template-columns:108px 1fr;gap:10px;padding:10px 16px;border-top:1px solid var(--line);}
+.spec-row:first-of-type{border-top:none;}
+.spec-row .k{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);}
+.spec-row .v{font-size:13.5px;color:var(--ink);}
+
+.timeline-mini{border-left:2px solid var(--line);padding-left:22px;display:flex;flex-direction:column;gap:18px;}
+.timeline-mini .tm-item{position:relative;}
+.timeline-mini .tm-item::before{
+  content:'';position:absolute;left:-27px;top:5px;width:9px;height:9px;
+  background:var(--card);border:2px solid var(--signal);
+}
+.timeline-mini .tm-item h4{font-family:var(--mono);font-size:12.5px;color:var(--ink);margin-bottom:3px;font-weight:600;}
+.timeline-mini .tm-item p{font-size:13px;color:var(--ink-soft);margin:0;}
+
+/* ==========================================================
+   EXPERIENCE
+   ========================================================== */
+.exp-list{display:flex;flex-direction:column;}
+.exp-item{display:grid;grid-template-columns:198px 1fr;gap:28px;padding:28px 0;border-top:1px solid var(--line);}
+.exp-item:first-child{border-top:none;}
+@media (max-width:700px){.exp-item{grid-template-columns:1fr;gap:6px;}}
+.exp-item .when{font-family:var(--mono);font-weight:500;font-size:11.5px;color:var(--ink-faint);}
+.exp-item h3{font-size:18px;margin-bottom:4px;font-weight:600;}
+.exp-item .org{font-family:var(--mono);font-weight:500;font-size:12px;color:var(--signal);margin-bottom:13px;display:block;}
+.exp-item ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.exp-item li{font-size:14px;color:var(--ink-soft);padding-left:16px;position:relative;}
+.exp-item li::before{content:'›';font-family:var(--mono);font-size:13px;position:absolute;left:0;top:0;color:var(--ink-faint);}
+
+/* ==========================================================
+   PROJECTS
+   ========================================================== */
+.proj-grid{display:flex;flex-direction:column;gap:18px;margin-bottom:40px;}
+.proj-card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);
+  padding:30px 32px;display:grid;grid-template-columns:1fr 240px;gap:28px;
+  transition:border-color .2s, box-shadow .2s;
+}
+.proj-card:hover{border-color:var(--line-strong);box-shadow:0 18px 40px rgba(21,23,28,0.08);}
+@media (max-width:820px){.proj-card{grid-template-columns:1fr;}}
+
+.proj-meta{
+  font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed var(--line);
+}
+.proj-meta span b{color:var(--ink-soft);font-weight:500;}
+.proj-card .ptop{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:6px;flex-wrap:wrap;}
+.proj-card h3{font-size:21px;font-weight:600;}
+.proj-tag{
+  font-family:var(--mono);font-weight:500;font-size:10.5px;color:var(--ink);
+  border:1px solid var(--ink);padding:4px 10px;white-space:nowrap;letter-spacing:.03em;text-transform:uppercase;
+}
+.proj-tag.accept{color:var(--accept);border-color:var(--accept);}
+
+.star{display:flex;flex-direction:column;gap:9px;margin-top:14px;}
+.star-row{display:flex;gap:12px;font-size:14px;color:var(--ink-soft);}
+.star-row b{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--signal);min-width:16px;flex-shrink:0;padding-top:3px;}
+.proj-links{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;}
+.proj-links a{
+  font-family:var(--mono);font-weight:500;font-size:12px;color:var(--ink);
+  border:1px solid var(--line);padding:8px 13px;border-radius:5px;
+  transition:border-color .18s,color .18s,background .18s;
+}
+.proj-links a:hover{border-color:var(--signal);color:var(--signal);background:var(--signal-soft);}
+
+.proj-side{border-left:1px solid var(--line);padding-left:26px;display:flex;flex-direction:column;justify-content:center;gap:16px;}
+@media (max-width:820px){.proj-side{border-left:none;border-top:1px solid var(--line);padding-left:0;padding-top:18px;}}
+.proj-side .res{display:flex;flex-direction:column;gap:2px;}
+.proj-side .res .v{font-family:var(--display);font-size:23px;font-weight:600;color:var(--ink);}
+.proj-side .res .k{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+
+/* more-experiments compact list */
+.more-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+.more-head h3{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:500;}
+.more-list{border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;background:var(--card);}
+.more-row{
+  display:grid;grid-template-columns:1.6fr 1.3fr 1.4fr auto;gap:18px;align-items:center;
+  padding:16px 20px;border-top:1px solid var(--line);
+}
+.more-row:first-child{border-top:none;}
+@media (max-width:760px){.more-row{grid-template-columns:1fr;gap:6px;}}
+.more-row .mr-name{font-size:14.5px;font-weight:600;color:var(--ink);}
+.more-row .mr-tag{font-family:var(--mono);font-size:10px;color:var(--signal);text-transform:uppercase;letter-spacing:.04em;}
+.more-row .mr-stack{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);}
+.more-row .mr-result{font-size:13px;color:var(--ink-soft);}
+.more-row .mr-link{font-family:var(--mono);font-size:11.5px;color:var(--ink);border:1px solid var(--line);padding:6px 11px;border-radius:5px;justify-self:start;transition:border-color .18s,color .18s;}
+.more-row .mr-link:hover{border-color:var(--signal);color:var(--signal);}
+
+/* ==========================================================
+   SKILLS
+   ========================================================== */
+.skills-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media (max-width:760px){.skills-grid{grid-template-columns:1fr;}}
+.skill-card{border:1px solid var(--line);border-radius:var(--r-card);padding:24px 26px;background:var(--card);transition:box-shadow .2s, border-color .2s;}
+.skill-card:hover{box-shadow:0 16px 32px rgba(21,23,28,0.07);border-color:var(--line-strong);}
+.skill-card .sc-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.skill-card .sc-no{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+.skill-card h3{font-size:16px;font-weight:600;}
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{font-family:var(--mono);font-size:11.5px;font-weight:500;background:var(--paper-alt);border:1px solid var(--line);color:var(--ink-soft);padding:6px 11px;border-radius:4px;}
+
+/* ==========================================================
+   PUBLICATION
+   ========================================================== */
+.pub-card{border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);overflow:hidden;}
+.pub-top{padding:34px 36px 28px;}
+.pub-badge{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--accept);background:var(--accept-soft);border:1px solid var(--accept);padding:5px 11px;border-radius:20px;margin-bottom:18px;}
+.pub-badge .d{width:5px;height:5px;border-radius:50%;background:var(--accept);}
+.pub-card h3{font-size:22px;margin-bottom:14px;font-weight:600;line-height:1.3;}
+.pub-card p{color:var(--ink-soft);font-size:14.5px;max-width:700px;}
+.pub-meta{display:flex;gap:24px;flex-wrap:wrap;margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);}
+.pub-meta b{color:var(--ink-soft);font-weight:500;}
+
+.bibtex{background:var(--code-bg);padding:22px 28px;position:relative;}
+.bibtex pre{font-family:var(--mono);font-size:12px;color:#C7D0DB;line-height:1.7;white-space:pre-wrap;word-break:break-word;}
+.bibtex .bk{color:#E8AF89;}
+.bibtex .bv{color:#9AD8B5;}
+.copy-btn{
+  position:absolute;top:18px;right:24px;font-family:var(--mono);font-size:11px;color:var(--code-dim);
+  border:1px solid var(--code-line);padding:6px 12px;border-radius:5px;background:transparent;cursor:pointer;
+  transition:color .18s,border-color .18s;
+}
+.copy-btn:hover{color:#F0EFE9;border-color:#454952;}
+
+/* ==========================================================
+   RECOGNITION
+   ========================================================== */
+.rec-sub{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin:0 0 16px;}
+.honors-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:44px;}
+@media (max-width:900px){.honors-grid{grid-template-columns:repeat(2,1fr);}}
+@media (max-width:600px){.honors-grid{grid-template-columns:1fr;}}
+.honor{border:1px solid var(--line);border-radius:var(--r-card);padding:18px 20px;background:var(--card);transition:box-shadow .2s;}
+.honor:hover{box-shadow:0 14px 28px rgba(21,23,28,0.07);}
+.honor .h-icon{font-family:var(--mono);color:var(--signal);font-weight:600;font-size:10px;letter-spacing:.07em;margin-bottom:8px;display:block;text-transform:uppercase;}
+.honor h4{font-size:14.5px;color:var(--ink);margin-bottom:5px;font-weight:600;font-family:var(--display);}
+.honor p{font-size:12.5px;color:var(--ink-faint);}
+
+.cert-list{border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;background:var(--card);}
+.cert-row{display:grid;grid-template-columns:28px 1fr auto;gap:14px;align-items:baseline;padding:14px 20px;border-top:1px solid var(--line);}
+.cert-row:first-child{border-top:none;}
+.cert-row .cr-no{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+.cert-row .cr-name{font-size:14px;color:var(--ink);font-weight:500;}
+.cert-row .cr-via{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+@media (max-width:560px){.cert-row{grid-template-columns:20px 1fr;}.cert-row .cr-via{grid-column:2;}}
+
+/* ==========================================================
+   CONTACT
+   ========================================================== */
+.contact-frame{
+  position:relative;border:1px dashed var(--line-strong);border-radius:11px;
+  padding:54px 44px;text-align:left;
+}
+.contact-frame span.cf-corner{position:absolute;width:18px;height:18px;border-color:var(--signal);border-style:solid;border-width:0;}
+.contact-frame .c1{top:-1px;left:-1px;border-top-width:2px;border-left-width:2px;}
+.contact-frame .c2{top:-1px;right:-1px;border-top-width:2px;border-right-width:2px;}
+.contact-frame .c3{bottom:-1px;left:-1px;border-bottom-width:2px;border-left-width:2px;}
+.contact-frame .c4{bottom:-1px;right:-1px;border-bottom-width:2px;border-right-width:2px;}
+.contact-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:28px;}
+.contact-wrap h2{font-size:clamp(28px,4.4vw,46px);max-width:760px;font-weight:500;line-height:1.2;}
+.contact-wrap h2 em{color:var(--signal);}
+.contact-links{display:flex;gap:12px;flex-wrap:wrap;}
+.contact-meta{font-family:var(--mono);font-size:13px;color:var(--ink-faint);display:flex;gap:24px;flex-wrap:wrap;}
+
+footer{
+  max-width:var(--maxw);margin:0 auto;padding:28px 48px 60px;
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+}
+@media (max-width:720px){footer{padding:24px 22px 44px;}}
+</style>
+</head>
+<body>
+
+<button class="mobile-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">☰ MENU</button>
+
+<aside class="railnav" id="railnav" aria-label="Primary navigation">
+  <div class="brand">Soban <em>Hussain</em></div>
+  <div class="brand-sub">AI/ML Engineer</div>
+  <div class="status"><span class="dot"></span> open_to_work: true</div>
+
+  <nav>
+    <a href="#hero" class="nav-link"><span class="idx">00</span>Overview</a>
+    <a href="#about" class="nav-link"><span class="idx">01</span>About</a>
+    <a href="#experience" class="nav-link"><span class="idx">02</span>Experience</a>
+    <a href="#projects" class="nav-link"><span class="idx">03</span>Experiments</a>
+    <a href="#skills" class="nav-link"><span class="idx">04</span>Capabilities</a>
+    <a href="#publication" class="nav-link"><span class="idx">05</span>Publication</a>
+    <a href="#recognition" class="nav-link"><span class="idx">06</span>Recognition</a>
+    <a href="#contact" class="nav-link"><span class="idx">07</span>Contact</a>
+  </nav>
+
+  <div class="rail-foot">
+    <a href="https://github.com/SobanHM" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/in/soban-hussaain-java-software-web-developer/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</aside>
+
+<div class="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="hero">
+    <div>
+      <div class="hero-kicker">
+        <span class="hk-name">Soban Hussain</span>
+        <span class="sep">/</span>
+        <span>AI/ML Engineer — Research Assistant</span>
+        <span class="hk-status"><span class="d"></span>open to work</span>
+      </div>
+      <h1>Building <em>intelligent systems</em><br>that see, retrieve, and reason.</h1>
+      <p class="lede">
+        Computer Science graduate from <strong>Sukkur IBA University</strong>, ready for roles as an
+        <strong>AI/ML Engineer, AI Developer, AI Models Evaluator, AI System Developer, or Research Assistant</strong>.
+        I build and rigorously benchmark Vision-Language Models, fine-tune with LoRA, ship RAG pipelines, and
+        turn research-grade AI into deployable, production-ready software.
+      </p>
+      <div class="hero-facts">BS Computer Science · Sukkur IBA University &nbsp;—&nbsp; based in Sukkur, Pakistan</div>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#projects">View Experiments →</a>
+        <a class="btn btn-ghost" href="#contact">Get in Touch</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="n">6+</span><span class="l">AI/ML Projects</span></div>
+        <div class="hstat"><span class="n">89.0</span><span class="l">F1 — Emotion Model</span></div>
+        <div class="hstat"><span class="n">iCOMET</span><span class="l">2026 Presenter</span></div>
+        <div class="hstat"><span class="n">2</span><span class="l">Industry Internships</span></div>
+      </div>
+    </div>
+
+    <div class="scan-panel reveal">
+      <div class="scan-head">
+        <span>scene_scan.py — detecting specialization()</span>
+        <span class="rec"><span class="rd"></span>LIVE</span>
+      </div>
+      <div class="scan-view">
+        <div class="scan-corners"><span></span><span></span><span></span><span></span></div>
+        <div class="scan-line"></div>
+        <div class="det-tag is-signal t1">vision-language models <span class="conf">0.94</span></div>
+        <div class="det-tag is-signal t2">rag pipelines <span class="conf">0.91</span></div>
+        <div class="det-tag is-signal t3">computer vision <span class="conf">0.97</span></div>
+        <div class="det-tag is-accept t4">iCOMET 2026 · accepted <span class="conf">1.00</span></div>
+      </div>
+      <div class="scan-readout">
+        <div><div class="v">0.041</div><div class="k">val loss</div></div>
+        <div><div class="v">94.2%</div><div class="k">val acc</div></div>
+        <div><div class="v">LoRA</div><div class="k">strategy</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="section" id="about">
+    <div class="section-head">
+      <div><div class="eyebrow">§ 01 — About</div><h2>From software foundations<br>to <em>applied AI</em> research.</h2></div>
+      <div class="section-index">sukkur, pakistan</div>
+    </div>
+
+    <div class="about-grid">
+      <div class="reveal">
+        <p>I'm a fresh Computer Science graduate making the deliberate move from <strong>full-stack software
+        engineering into AI/ML research and applied development</strong>. My early work — Java and MySQL banking
+        systems, college management platforms, React-based web apps — built the engineering discipline that
+        now backs every model I ship: clean architecture, reliable data handling, and software that survives
+        contact with real users.</p>
+        <p>That foundation is now pointed squarely at deep learning. I've benchmarked and fine-tuned
+        <strong>Vision-Language Models (LLaVA, CogVLM, Qwen-VL)</strong> for real-world accessibility use cases,
+        built <strong>LoRA-tuned</strong> assistive narration systems, shipped <strong>RAG-based</strong>
+        conversational pipelines, and trained classifiers spanning speaker recognition, emotion detection,
+        and healthcare prediction. My approach stays research-disciplined — literature review, dataset curation,
+        rigorous benchmarking, statistical evaluation — but always aimed at a working, deployable result.</p>
+        <p>That discipline earned an <strong>accepted paper presentation at iCOMET 2026</strong> (IEEE Xplore,
+        forthcoming), on benchmarking VLMs for visually impaired assistance — work I'm continuing to extend
+        through the <strong>SceneNarrator</strong> project below.</p>
+      </div>
+
+      <div class="reveal">
+        <div class="spec-sheet">
+          <div class="ss-head">profile.yaml</div>
+          <div class="spec-row"><span class="k">focus</span><span class="v">VLMs, RAG, applied deep learning</span></div>
+          <div class="spec-row"><span class="k">education</span><span class="v">BS Computer Science, Sukkur IBA University</span></div>
+          <div class="spec-row"><span class="k">based_in</span><span class="v">Sukkur, Pakistan</span></div>
+          <div class="spec-row"><span class="k">status</span><span class="v">Open to work</span></div>
+        </div>
+        <div class="timeline-mini">
+          <div class="tm-item"><h4>2022 — Sukkur IBA University</h4><p>Began BS Computer Science; foundations in OOP, databases, and web development.</p></div>
+          <div class="tm-item"><h4>2023 — Programmers Tech</h4><p>Java Developer Intern — banking, education, and management software systems.</p></div>
+          <div class="tm-item"><h4>2024 — AI/ML Pivot</h4><p>Shifted focus toward deep learning, NLP, and computer vision coursework and projects.</p></div>
+          <div class="tm-item"><h4>2025 — National Assembly Secretariat</h4><p>IT &amp; Automation Intern — built a speaker-recognition system for secure institutional use.</p></div>
+          <div class="tm-item"><h4>2026 — iCOMET Presenter</h4><p>Accepted paper on VLM benchmarking for accessibility; final-year AI research delivered.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EXPERIENCE ================= -->
+  <section class="section" id="experience">
+    <div class="section-head">
+      <div><div class="eyebrow">§ 02 — Experience</div><h2>Professional Experience</h2></div>
+      <div class="section-index">2023 — 2026</div>
+    </div>
+    <div class="exp-list">
+      <div class="exp-item reveal">
+        <div class="when">25 Jun 2025 — 6 Aug 2025</div>
+        <div>
+          <h3>IT &amp; Automation Intern</h3>
+          <span class="org">Pakistan National Assembly Secretariat · Islamabad</span>
+          <ul>
+            <li>Developed a machine-learning-based speaker recognition system for automated identity verification in a secure institutional environment.</li>
+            <li>Processed audio data, extracted discriminative features, trained classifiers, and validated model behavior for reliability-sensitive use cases.</li>
+            <li>Produced technical documentation and deployment concepts aligned with confidentiality and institutional IT standards.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="when">Jun 2023 — Aug 2023</div>
+        <div>
+          <h3>Java Developer Intern</h3>
+          <span class="org">Programmers Tech IT Company · Pakistan</span>
+          <ul>
+            <li>Engineered Java and MySQL applications for banking, education, and management use cases.</li>
+            <li>Improved database organization, application usability, and API-supported processes across client-oriented systems.</li>
+            <li>Collaborated with a team to translate requirements into maintainable, scalable, testable modules.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="when">Aug 2024 — May 2025</div>
+        <div>
+          <h3>Team Lead, Data Management</h3>
+          <span class="org">Alumni &amp; Welfare Club, Sukkur IBA University</span>
+          <ul><li>Led member-record management and workflow organization to improve data accuracy and accessibility.</li></ul>
+        </div>
+      </div>
+      <div class="exp-item reveal">
+        <div class="when">Sep 2025 — Apr 2026</div>
+        <div>
+          <h3>Executive Member</h3>
+          <span class="org">Society of Computer Science, Sukkur IBA University</span>
+          <ul><li>Coordinated academic events, student engagement, and society operations for university-level CS initiatives.</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROJECTS ================= -->
+  <section class="section" id="projects">
+    <div class="section-head">
+      <div><div class="eyebrow">§ 03 — Experiment Log</div><h2>Featured <em>Experiments</em></h2></div>
+      <div class="section-index">github.com/SobanHM</div>
+    </div>
+
+    <div class="proj-grid">
+
+      <div class="proj-card reveal">
+        <div>
+          <div class="proj-meta"><span>id: <b>scene-narrator-vlm</b></span><span>status: <b>accepted</b></span><span>type: <b>research</b></span></div>
+          <div class="ptop">
+            <h3>SceneNarrator — VLM Benchmarking &amp; Fine-Tuning</h3>
+            <span class="proj-tag accept">iCOMET 2026</span>
+          </div>
+          <div class="star">
+            <div class="star-row"><b>S</b> Visually impaired users in Pakistan lack localized, context-aware scene narration tools — most VLM benchmarks are built on Western datasets.</div>
+            <div class="star-row"><b>T</b> Build and evaluate an assistive scene-narration and navigation-guidance system tuned for local environments.</div>
+            <div class="star-row"><b>A</b> Curated localized visual-language data and applied LoRA-based supervised fine-tuning across LLaVA to improve spatial interpretation and response grounding.</div>
+            <div class="star-row"><b>R</b> Accepted as a paper presentation at iCOMET 2026; publication pending in IEEE Xplore.</div>
+          </div>
+          <div class="proj-links">
+            <a href="https://github.com/SobanHM/Benchmark-Evaluation-of-VLMs-for-VIA" target="_blank" rel="noopener">Benchmark Repo ↗</a>
+            <a href="https://github.com/SobanHM/Spatial-VLM-Assistant" target="_blank" rel="noopener">Spatial VLM Assistant ↗</a>
+          </div>
+        </div>
+        <div class="proj-side">
+          <div class="res"><div class="v">Accepted</div><div class="k">IEEE Xplore — iCOMET 2026</div></div>
+          <div class="res"><div class="v">LLaVA-13B</div><div class="k">benchmarked model</div></div>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div>
+          <div class="proj-meta"><span>id: <b>smart-toll-vision</b></span><span>stack: <b>YOLOv8 · DeepSORT · OpenCV</b></span></div>
+          <div class="ptop">
+            <h3>Automated Toll Tax / Smart Toll Vision System</h3>
+            <span class="proj-tag">Computer Vision</span>
+          </div>
+          <div class="star">
+            <div class="star-row"><b>S</b> Manual toll counting is slow and error-prone, creating throughput bottlenecks at checkpoints.</div>
+            <div class="star-row"><b>T</b> Automate real-time vehicle detection, classification, and toll-line tracking.</div>
+            <div class="star-row"><b>A</b> Combined YOLOv8 detection with DeepSORT tracking to identify toll-line crossings, classify vehicle type, and overlay live statistics for fee calculation.</div>
+            <div class="star-row"><b>R</b> Reduced manual counting effort and improved operational throughput in traffic-monitoring scenarios.</div>
+          </div>
+          <div class="proj-links"><a href="https://github.com/SobanHM/Automated-Toll-Tax-System" target="_blank" rel="noopener">Repository ↗</a></div>
+        </div>
+        <div class="proj-side">
+          <div class="res"><div class="v">8★ / 6 forks</div><div class="k">community traction</div></div>
+          <div class="res"><div class="v">Real-time</div><div class="k">detection + tracking</div></div>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div>
+          <div class="proj-meta"><span>id: <b>emotion-classifier</b></span><span>stack: <b>RoBERTa · BERT</b></span></div>
+          <div class="ptop">
+            <h3>Fine-Grained Emotion Classifier</h3>
+            <span class="proj-tag">NLP</span>
+          </div>
+          <div class="star">
+            <div class="star-row"><b>S</b> Coarse sentiment labels miss the nuance needed for emotionally-aware applications.</div>
+            <div class="star-row"><b>T</b> Build a fine-grained emotion classifier mapped to Ekman's six basic emotions.</div>
+            <div class="star-row"><b>A</b> Built a dataset from GoEmotions raw data, then benchmarked SVM, Logistic Regression, KNN, Random Forest, Naive Bayes, BERT, and RoBERTa.</div>
+            <div class="star-row"><b>R</b> Fine-tuned RoBERTa emerged as the best performer on the held-out test set.</div>
+          </div>
+          <div class="proj-links"><a href="https://github.com/SobanHM" target="_blank" rel="noopener">GitHub Profile ↗</a></div>
+        </div>
+        <div class="proj-side">
+          <div class="res"><div class="v">89.0</div><div class="k">F1-score</div></div>
+          <div class="res"><div class="v">89.4% / 90.0%</div><div class="k">accuracy / recall</div></div>
+        </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div>
+          <div class="proj-meta"><span>id: <b>personalized-rag</b></span><span>stack: <b>RAG · Vector Search</b></span></div>
+          <div class="ptop">
+            <h3>Personalized RAG Chatbot System</h3>
+            <span class="proj-tag">GenAI</span>
+          </div>
+          <div class="star">
+            <div class="star-row"><b>S</b> Generic chatbots give context-blind answers when users need grounded, personalized responses.</div>
+            <div class="star-row"><b>T</b> Build a retrieval-augmented chatbot that grounds generation in real documents.</div>
+            <div class="star-row"><b>A</b> Structured document ingestion, embedding-based semantic search, and retrieved-context grounding ahead of generation.</div>
+            <div class="star-row"><b>R</b> Delivered a knowledge-aware conversational system with measurably more accurate, context-aligned answers.</div>
+          </div>
+          <div class="proj-links"><a href="https://github.com/SobanHM" target="_blank" rel="noopener">GitHub Profile ↗</a></div>
+        </div>
+        <div class="proj-side"><div class="res"><div class="v">Grounded</div><div class="k">retrieval + generation</div></div></div>
+      </div>
+
+    </div>
+
+    <div class="more-head"><h3>More Experiments</h3><span class="section-index">6 additional repositories</span></div>
+    <div class="more-list">
+      <div class="more-row reveal">
+        <div><div class="mr-name">Anemia &amp; Leukemia Disease Prediction</div><div class="mr-tag">Medical AI</div></div>
+        <div class="mr-stack">XGBoost · LightGBM · SMOTE</div>
+        <div class="mr-result">Dual-task diagnostic pipeline, presented at Tech Fest 2025</div>
+        <a class="mr-link" href="https://github.com/SobanHM/Anemia_Leukemia_Diseases_Prediction" target="_blank" rel="noopener">Repo ↗</a>
+      </div>
+      <div class="more-row reveal">
+        <div><div class="mr-name">SAM3 Human Segmentation Validation</div><div class="mr-tag">Computer Vision</div></div>
+        <div class="mr-stack">SAM3 · IoU / Precision / Recall / F1</div>
+        <div class="mr-result">Human-in-the-loop benchmark vs. ground truth</div>
+        <a class="mr-link" href="https://github.com/SobanHM/sam3-human-segmentation-validation" target="_blank" rel="noopener">Repo ↗</a>
+      </div>
+      <div class="more-row reveal">
+        <div><div class="mr-name">Conversational AI for Dementia Support</div><div class="mr-tag">Responsible AI</div></div>
+        <div class="mr-stack">NLP · Dialogue Systems</div>
+        <div class="mr-result">Privacy-first prototype, limited autonomy by design</div>
+        <a class="mr-link" href="https://github.com/SobanHM" target="_blank" rel="noopener">Profile ↗</a>
+      </div>
+      <div class="more-row reveal">
+        <div><div class="mr-name">Notes Sharing Website</div><div class="mr-tag">Web</div></div>
+        <div class="mr-stack">React · JavaScript</div>
+        <div class="mr-result">Component-based UI for student note sharing</div>
+        <a class="mr-link" href="https://github.com/SobanHM" target="_blank" rel="noopener">Profile ↗</a>
+      </div>
+      <div class="more-row reveal">
+        <div><div class="mr-name">Bank Management System</div><div class="mr-tag">Software</div></div>
+        <div class="mr-stack">Java · MySQL · SHA-256</div>
+        <div class="mr-result">Top 10 finish, Grand Tech Expo</div>
+        <a class="mr-link" href="https://github.com/SobanHM" target="_blank" rel="noopener">Profile ↗</a>
+      </div>
+      <div class="more-row reveal">
+        <div><div class="mr-name">College Management System</div><div class="mr-tag">Software</div></div>
+        <div class="mr-stack">Java · MySQL · 10 modules</div>
+        <div class="mr-result">1st Prize, SIBA Fest 2024</div>
+        <a class="mr-link" href="https://github.com/SobanHM" target="_blank" rel="noopener">Profile ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SKILLS ================= -->
+  <section class="section" id="skills">
+    <div class="section-head">
+      <div><div class="eyebrow">§ 04 — Stack</div><h2>Technical <em>Capabilities</em></h2></div>
+      <div class="section-index">7 categories</div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">01</span><h3>ML &amp; Deep Learning</h3></div>
+        <div class="chip-row"><span class="chip">PyTorch</span><span class="chip">Scikit-Learn</span><span class="chip">XGBoost</span><span class="chip">LightGBM</span><span class="chip">SVM</span><span class="chip">Random Forest</span><span class="chip">SMOTE</span><span class="chip">Predictive Modeling</span></div></div>
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">02</span><h3>NLP &amp; Generative AI</h3></div>
+        <div class="chip-row"><span class="chip">RAG</span><span class="chip">Vector Search</span><span class="chip">BERT</span><span class="chip">RoBERTa</span><span class="chip">LoRA Fine-Tuning</span><span class="chip">Prompt Engineering</span></div></div>
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">03</span><h3>Vision-Language Models</h3></div>
+        <div class="chip-row"><span class="chip">LLaVA</span><span class="chip">CogVLM</span><span class="chip">Qwen-VL</span><span class="chip">BLIP-2</span><span class="chip">SAM3</span></div></div>
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">04</span><h3>Computer Vision</h3></div>
+        <div class="chip-row"><span class="chip">YOLOv8</span><span class="chip">DeepSORT</span><span class="chip">OpenCV</span></div></div>
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">05</span><h3>Data &amp; Evaluation</h3></div>
+        <div class="chip-row"><span class="chip">Dataset Curation</span><span class="chip">Feature Extraction</span><span class="chip">Class-Imbalance Handling</span><span class="chip">Model Benchmarking</span><span class="chip">Statistical Metrics</span><span class="chip">Error Analysis</span></div></div>
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">06</span><h3>Software &amp; Databases</h3></div>
+        <div class="chip-row"><span class="chip">Java</span><span class="chip">Python</span><span class="chip">C++</span><span class="chip">SQL</span><span class="chip">MySQL</span><span class="chip">MongoDB</span><span class="chip">API Integration</span><span class="chip">Secure System Design</span></div></div>
+      <div class="skill-card reveal"><div class="sc-head"><span class="sc-no">07</span><h3>Web &amp; Documentation</h3></div>
+        <div class="chip-row"><span class="chip">React</span><span class="chip">JavaScript</span><span class="chip">HTML5</span><span class="chip">CSS3</span><span class="chip">LaTeX / Overleaf</span><span class="chip">Technical Writing</span></div></div>
+    </div>
+  </section>
+
+  <!-- ================= PUBLICATION ================= -->
+  <section class="section" id="publication">
+    <div class="section-head">
+      <div><div class="eyebrow">§ 05 — Research Output</div><h2><em>Publication</em></h2></div>
+      <div class="section-index">IEEE Xplore — pending</div>
+    </div>
+    <div class="pub-card reveal">
+      <div class="pub-top">
+        <div class="pub-badge"><span class="d"></span>Accepted Paper Presenter — iCOMET 2026</div>
+        <h3>Localized Benchmark Evaluation of Vision-Language Models for Visually Impaired Assistance</h3>
+        <p>Presented research benchmarking Vision-Language Models for localized scene understanding, assistive
+        narration, and navigation guidance for the visually impaired, at the International Conference on
+        Computing, Mathematics and Technology (iCOMET 2026). Publication is expected in the IEEE Xplore
+        Digital Library.</p>
+        <div class="pub-meta">
+          <span>venue: <b>iCOMET 2026</b></span>
+          <span>role: <b>Presenter</b></span>
+          <span>index: <b>IEEE Xplore (pending)</b></span>
+        </div>
+      </div>
+      <div class="bibtex">
+        <button class="copy-btn" id="copyBibtex">copy citation</button>
+        <pre><span class="bk">@inproceedings</span>{<span class="bv">hussain2026vlmbenchmark</span>,
+  <span class="bk">title</span>     = {Localized Benchmark Evaluation of Vision-Language Models for Visually Impaired Assistance},
+  <span class="bk">author</span>    = {Hussain, Soban},
+  <span class="bk">booktitle</span> = {Proceedings of iCOMET 2026},
+  <span class="bk">year</span>      = {2026},
+  <span class="bk">note</span>      = {Accepted; publication pending, IEEE Xplore}
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RECOGNITION ================= -->
+  <section class="section" id="recognition">
+    <div class="section-head">
+      <div><div class="eyebrow">§ 06 — Recognition</div><h2>Honors &amp; <em>Certifications</em></h2></div>
+      <div class="section-index">2024 — 2026</div>
+    </div>
+
+    <h3 class="rec-sub">Awards &amp; Activities</h3>
+    <div class="honors-grid">
+      <div class="honor reveal"><span class="h-icon">Award</span><h4>1st Prize, SIBA Fest 2024</h4><p>Software Project Exhibition — College Management Real-Time Dedicated System (Java, MySQL).</p></div>
+      <div class="honor reveal"><span class="h-icon">Exhibit</span><h4>Tech Fest 2025</h4><p>Presented AI in Healthcare project — anemia &amp; leukemia prediction with XGBoost / LightGBM.</p></div>
+      <div class="honor reveal"><span class="h-icon">Expo</span><h4>Grand Tech Expo — Top 10</h4><p>Bank Management System; ranked 5th among the top 10 projects presented.</p></div>
+      <div class="honor reveal"><span class="h-icon">Debate</span><h4>Book Review Competition</h4><p>Team lead; intra-university winner, inter-university runner-up — "Who Moved My Cheese?"</p></div>
+      <div class="honor reveal"><span class="h-icon">Diplomacy</span><h4>Model United Nations</h4><p>Special Mention Award (×2), representing the People's Republic of China.</p></div>
+      <div class="honor reveal"><span class="h-icon">Leadership</span><h4>National Leadership Conf. 2026</h4><p>Participated in the March 2026 series on leadership, collaboration, and growth.</p></div>
+    </div>
+
+    <h3 class="rec-sub">Certifications &amp; Training</h3>
+    <div class="cert-list">
+      <div class="cert-row reveal"><span class="cr-no">01</span><span class="cr-name">Google AI Essentials</span><span class="cr-via">Google Career Certificate — Coursera</span></div>
+      <div class="cert-row reveal"><span class="cr-no">02</span><span class="cr-name">Google Prompting Essentials</span><span class="cr-via">Google Career Certificate — Coursera</span></div>
+      <div class="cert-row reveal"><span class="cr-no">03</span><span class="cr-name">AI for Research and Insights</span><span class="cr-via">Google Career Certificate — Coursera</span></div>
+      <div class="cert-row reveal"><span class="cr-no">04</span><span class="cr-name">Google AI Specialization</span><span class="cr-via">Google Career Certificate — Coursera</span></div>
+      <div class="cert-row reveal"><span class="cr-no">05</span><span class="cr-name">Latest Trends in Applied CS</span><span class="cr-via">Workshop — Applied AI, DevOps, Cybersecurity</span></div>
+      <div class="cert-row reveal"><span class="cr-no">06</span><span class="cr-name">AI Tour Sindh 2025</span><span class="cr-via">Forum — AI innovation &amp; fintech</span></div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="section" id="contact" style="border-bottom:none;">
+    <div class="contact-frame reveal">
+      <span class="cf-corner c1"></span><span class="cf-corner c2"></span><span class="cf-corner c3"></span><span class="cf-corner c4"></span>
+      <div class="contact-wrap">
+        <div class="eyebrow">§ 07 — Contact</div>
+        <h2>Open to AI/ML Engineer, Research Assistant, and Applied AI roles — let's build something <em>worth shipping</em>.</h2>
+        <div class="contact-links">
+          <a class="btn btn-primary" href="mailto:sobanhussain.bscsf22@iba-suk.edu.pk">Email Me →</a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/in/soban-hussaain-java-software-web-developer/" target="_blank" rel="noopener">LinkedIn</a>
+          <a class="btn btn-ghost" href="https://github.com/SobanHM" target="_blank" rel="noopener">GitHub</a>
+        </div>
+        <div class="contact-meta">
+          <span>sobanhussain.bscsf22@iba-suk.edu.pk</span>
+          <span>+92 313 2265232</span>
+          <span>Sukkur, Pakistan</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Soban Hussain. Built with HTML, CSS &amp; JavaScript.</span>
+    <span>last_updated: 2026-06-19</span>
+  </footer>
+
+</div>
+
+<script>
+// Mobile nav toggle
+const toggle = document.getElementById('navToggle');
+const rail = document.getElementById('railnav');
+toggle.addEventListener('click', () => {
+  const open = rail.classList.toggle('open');
+  toggle.setAttribute('aria-expanded', open);
+});
+document.querySelectorAll('.nav-link').forEach(a=>{
+  a.addEventListener('click', ()=>{ rail.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); });
+});
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+},{threshold:0.12});
+reveals.forEach(el=>io.observe(el));
+
+// Active nav link highlighting
+const sections = document.querySelectorAll('.section, .hero');
+const navLinks = document.querySelectorAll('.nav-link');
+const navObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const id = entry.target.getAttribute('id');
+      navLinks.forEach(l=>{
+        l.classList.toggle('active', l.getAttribute('href') === '#'+id);
+      });
+    }
+  });
+},{rootMargin:'-40% 0px -50% 0px'});
+sections.forEach(s=>navObserver.observe(s));
+
+// Copy BibTeX citation
+const copyBtn = document.getElementById('copyBibtex');
+if(copyBtn){
+  copyBtn.addEventListener('click', async ()=>{
+    const text = document.querySelector('.bibtex pre').innerText;
+    try{
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = 'copied ✓';
+    }catch(e){
+      copyBtn.textContent = 'select & copy';
+    }
+    setTimeout(()=>{ copyBtn.textContent = 'copy citation'; }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
